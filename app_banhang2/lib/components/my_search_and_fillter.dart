@@ -7,11 +7,14 @@ class SearchAndFillter extends StatefulWidget {
   final Widget screens;
   final bool isSearchScreen;
   final bool isButtonFillter;
+  final String initialSearchText; // Add this
+
   const SearchAndFillter({
     super.key,
     required this.screens,
     this.isSearchScreen = false,
     required this.isButtonFillter,
+    this.initialSearchText = '', // Add this
   });
 
   @override
@@ -19,7 +22,26 @@ class SearchAndFillter extends StatefulWidget {
 }
 
 class _SearchAndFillterState extends State<SearchAndFillter> {
-  final TextEditingController _searchController = TextEditingController();
+    late TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text: widget.initialSearchText);
+  }
+
+  void _handleSearch(String value) {
+    if (value.isNotEmpty) {
+      Navigator.of(context).push(
+        SlideAnimation.createRoute(
+          OutResults(
+            searchQuery: value,
+            initialSearchText: value, // Add this
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,21 +89,13 @@ class _SearchAndFillterState extends State<SearchAndFillter> {
                               contentPadding: const EdgeInsets.symmetric(
                                   vertical: 13.0, horizontal: 16.0),
                             ),
-                            onSubmitted: (value) {
-                              Navigator.of(context).push(
-                                  SlideAnimation.createRoute(
-                                      OutResults(searchQuery: value)));
-                            },
-                            onChanged: (value) {
-                              setState(() {});
-                            },
+                            onSubmitted: _handleSearch,
                             textInputAction: TextInputAction.search,
                           )
                         : InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                  SlideAnimation.createRoute(widget.screens));
-                            },
+                            onTap: () => Navigator.of(context).push(
+                              SlideAnimation.createRoute(widget.screens),
+                            ),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 13.0, horizontal: 16.0),

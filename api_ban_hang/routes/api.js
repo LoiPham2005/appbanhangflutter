@@ -6,6 +6,7 @@ var future_user = require('../controller/future_user');
 var forgotPassword = require('../controller/forgot_password');
 var category = require('../controller/category')
 var products = require('../controller/products')
+var image_banner = require('../controller/image_banner');
 
 // router.get('/users',mdw.api_auth, api_u.); // link ds:  http://localhost:3000/api/users
 // đăng kí , đăng nhập
@@ -20,6 +21,13 @@ router.post('/check/checkOTP', forgotPassword.checkOtpValidity);
 router.put('/check/reset-password/:email', forgotPassword.resetPassword);
 router.delete('/check/deleteOTP/:email', forgotPassword.deleteOTP);
 
+// thêm sửa xoá hiển thị banners
+router.post('/banners/add', image_banner.add);
+router.get('/banners/list', image_banner.list);
+router.put('/banners/edit/:id', image_banner.edit);
+router.delete('/banners/delete/:id', image_banner.delete);
+router.get('/banners/search', image_banner.search);
+
 // thêm sửa xoá hiển thị category
 router.post('/category/add', category.add);
 router.get('/category/list', category.list);
@@ -33,6 +41,8 @@ router.get('/products/list', products.list);
 router.put('/products/edit/:id', products.edit);
 router.delete('/products/delete/:id', products.delete);
 router.get('/products/search', products.search);
+
+
 
 
 

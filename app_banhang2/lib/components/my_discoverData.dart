@@ -6,28 +6,32 @@ class CategoriesDataDiscover {
 // danh sách các mục
   static final List<Map<String, dynamic>> categories = [
     {
-      'image': 'assets/images/clothing.png',
+      'image': '', // Will be updated with banner image
       'label': 'cloting'.tr(),
       'color': const Color(0xffa3a798),
       'screen': const CategoryTest(),
+      'bannerKey': 'disColothing', // Key to match with ModelBanner property
     },
     {
-      'image': 'assets/images/accessories.png',
+      'image': '',
       'label': 'accessries'.tr(),
       'color': const Color(0xff898280),
       'screen': const CategoryTest(),
+      'bannerKey': 'disAccess',
     },
     {
-      'image': 'assets/images/shoes.png',
+      'image': '',
       'label': 'shoes'.tr(),
       'color': const Color(0xff44565c),
       'screen': const CategoryTest(),
+      'bannerKey': 'disShoes',
     },
     {
-      'image': 'assets/images/collection.png',
+      'image': '',
       'label': 'collection'.tr(),
       'color': const Color(0xffb9aeb2),
       'screen': const CategoryTest(),
+      'bannerKey': 'disCollection',
     },
   ];
 }

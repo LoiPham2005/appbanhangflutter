@@ -1,6 +1,8 @@
 import 'package:app_banhang2/components/my_categoriesData.dart';
 import 'package:app_banhang2/components/my_drawer.dart';
+import 'package:app_banhang2/services/models/model_image_banner.dart';
 import 'package:app_banhang2/services/models/model_product.dart';
+import 'package:app_banhang2/services/service_image_banner.dart';
 import 'package:app_banhang2/services/service_products.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -16,24 +18,32 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   List<ModelProduct> _products = [];
+  List<Widget> _bannerItems = [];
+  List<ModelBanner> _bannerDefault = [];
+
   // final numberFormat = NumberFormat("#,###", "en_US"); // Format số có dấu phẩy hoặc dấu chấm tùy locale
   final numberFormat =
       NumberFormat("#,###", "de_DE"); // Sử dụng dấu chấm thay vì dấu phẩy
 
   // Sử dụng dữ liệu từ file my_categoryData.dart
-  final List<Widget> item = CategoriesData.item;
+  // final List<Widget> item = CategoriesData.item;
   final List<Map<String, dynamic>> categories = CategoriesData.categories;
-  final List<Map<String, dynamic>> featuredProducts =
-      CategoriesData.featuredProducts;
+  // final List<Map<String, dynamic>> featuredProducts =
+  //     CategoriesData.featuredProducts;
 
   final APIProduct _apiProduct = APIProduct();
+  final APIBanner _apiBanner = APIBanner();
 
 // slide ảnh chạy
   Widget _buildCarousel() {
+    if (_bannerItems.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
       child: CarouselSlider(
-        items: item,
+        items: _bannerItems,
         options: CarouselOptions(
           autoPlay: true,
           viewportFraction: 1.0,
@@ -45,12 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-// dấu chấm ảnh chạy đến đâu dấu chạy đến đấy
   Widget _buildIndicators() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
-        item.length,
+        _bannerItems.length,
         (index) => GestureDetector(
           onTap: () => setState(() => _currentIndex = index),
           child: Container(
@@ -78,10 +87,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadingData() async {
-    final data = await _apiProduct.getProducts();
+    final products = await _apiProduct.getProducts();
+    final banners = await CategoriesData.getBannerWidgets();
+    final banner2 = await _apiBanner.getbanners();
+
     setState(() {
-      _products = data; // Handle null case to prevent errors
+      _products = products;
+      _bannerItems = banners;
+      _bannerDefault = banner2;
     });
+  }
+
+// select banner default
+  Widget selectImage(String? imageUrl) {
+    return imageUrl != null && imageUrl.isNotEmpty
+        ? Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                Image.asset('assets/images/banner.png'),
+          )
+        : Image.asset('assets/images/banner.png');
   }
 
   @override
@@ -101,12 +127,14 @@ class _HomeScreenState extends State<HomeScreen> {
         onNotification: (overscroll) {
           return true;
         },
-        child: RefreshIndicator( // Add RefreshIndicator here
+        child: RefreshIndicator(
+          // Add RefreshIndicator here
           onRefresh: () async {
             await loadingData(); // Reuse existing load method
           },
           child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(), // Enable scroll when content is small
+            physics:
+                const AlwaysScrollableScrollPhysics(), // Enable scroll when content is small
             child: Column(
               children: [
                 Row(
@@ -209,7 +237,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Image.asset('assets/images/banner4.png'),
+                _bannerDefault.isNotEmpty
+                    ? selectImage(_bannerDefault[0].homeBanner4)
+                    : const Center(child: CircularProgressIndicator()),
+                _bannerDefault.isNotEmpty
+                    ? selectImage(_bannerDefault[0].homeBanner5)
+                    : const Center(child: CircularProgressIndicator()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width *
+                            0.43, // 43% screen width
+                        height: 200,
+                        child: _bannerDefault.isNotEmpty
+                            ? selectImage(_bannerDefault[0].homeBanner6)
+                            : const Center(child: CircularProgressIndicator()),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width *
+                            0.43, // 43% screen width
+                        height: 200,
+                        child: _bannerDefault.isNotEmpty
+                            ? selectImage(_bannerDefault[0].homeBanner7)
+                            : const Center(child: CircularProgressIndicator()),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

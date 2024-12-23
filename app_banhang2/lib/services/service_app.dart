@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:app_banhang2/services/base_url.dart';
+import 'package:app_banhang2/services/base/base_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_banhang2/services/models/model_auth.dart';
 

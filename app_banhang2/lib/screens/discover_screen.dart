@@ -3,6 +3,8 @@ import 'package:app_banhang2/components/my_drawer.dart';
 import 'package:app_banhang2/components/my_fillter.dart';
 import 'package:app_banhang2/components/my_search_and_fillter.dart';
 import 'package:app_banhang2/pages/search_screen.dart';
+import 'package:app_banhang2/services/models/model_image_banner.dart';
+import 'package:app_banhang2/services/service_image_banner.dart';
 import 'package:flutter/material.dart';
 
 class DiscoverScreen extends StatefulWidget {
@@ -17,6 +19,75 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Color searchBarColor = Colors.white; // Initial color
 
   final List<Map<String, dynamic>> category = CategoriesDataDiscover.categories;
+  final APIBanner _apiBanner = APIBanner();
+  ModelBanner? _banner;
+
+  @override
+  void initState() {
+    super.initState();
+    loadingData();
+  }
+
+  Future<void> loadingData() async {
+    try {
+      final banners = await _apiBanner.getbanners();
+      if (banners.isNotEmpty) {
+        setState(() {
+          _banner = banners[0];
+        });
+      }
+    } catch (e) {
+      print('Error loading data: $e');
+    }
+  }
+
+  String getBannerImage(String bannerKey) {
+    if (_banner == null) return '';
+
+    switch (bannerKey) {
+      case 'disColothing':
+        return _banner?.disColothing ?? '';
+      case 'disAccess':
+        return _banner?.disAccess ?? '';
+      case 'disShoes':
+        return _banner?.disShoes ?? '';
+      case 'disCollection':
+        return _banner?.disCollection ?? '';
+      default:
+        return '';
+    }
+  }
+
+  Widget _buildCategoryImage(Map<String, dynamic> category) {
+    final bannerImage = getBannerImage(category['bannerKey']);
+
+    final assetMap = {
+      'disColothing': 'clothing.png',
+      'disAccess': 'accessories.png',
+      'disShoes': 'shoes.png',
+      'disCollection': 'collection.png'
+    };
+
+    return bannerImage.isNotEmpty
+        ? Image.network(
+            bannerImage,
+            width: 120,
+            height: 130,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Image.asset(
+              'assets/images/${assetMap[category['bannerKey']]}',
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+          )
+        : Image.asset(
+            'assets/images/${assetMap[category['bannerKey']]}',
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+          );
+  }
 
   // danh sách danh mục
   Widget listCategory() {
@@ -88,12 +159,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(0),
-                        child: Image.asset(
-                          category['image'],
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                                  Icons.error), //Handle image loading errors
-                        ),
+                        child: _buildCategoryImage(category),
                       ),
                     ],
                   ),
@@ -125,7 +191,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           children: [
             const SearchAndFillter(
               screens: SearchScreen(),
-              isSearchScreen: false, isButtonFillter: true,
+              isSearchScreen: false,
+              isButtonFillter: true,
             ),
             const SizedBox(height: 16), // Add space between widgets
             listCategory(),

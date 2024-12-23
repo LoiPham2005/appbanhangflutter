@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'package:app_banhang2/services/base/base_url.dart';
-import 'package:app_banhang2/services/models/model_product.dart';
+import 'package:app_banhang2/services/models/model_image_banner.dart';
 import 'package:http/http.dart' as http;
 
-class APIProduct {
+class APIBanner {
   final String baseUrl = BaseURL.baseURL;
 
   // Thêm sản phẩm
-  Future<String> addProduct(ModelProduct product) async {
+  Future<String> addbanner(ModelBanner banner) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/api/products/add'),
+        Uri.parse('$baseUrl/api/banners/add'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(product.toJson()),
+        body: jsonEncode(banner.toJson()),
       );
 
       if (response.statusCode == 200) {
@@ -27,12 +27,12 @@ class APIProduct {
   }
 
   // Cập nhật sản phẩm
-  Future<String> editProduct(ModelProduct product) async {
+  Future<String> editbanner(ModelBanner banner) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/api/products/edit/${product.id}'),
+        Uri.parse('$baseUrl/api/banners/edit/${banner.id}'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(product.toJson()),
+        body: jsonEncode(banner.toJson()),
       );
 
       if (response.statusCode == 200) {
@@ -47,10 +47,10 @@ class APIProduct {
   }
 
   // Xóa sản phẩm
-  Future<String> deleteProduct(String productId) async {
+  Future<String> deletebanner(String bannerId) async {
     try {
       final response = await http.delete(
-        Uri.parse('$baseUrl/api/products/delete/$productId'),
+        Uri.parse('$baseUrl/api/banners/delete/$bannerId'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -66,39 +66,19 @@ class APIProduct {
   }
 
   // Lấy danh sách sản phẩm
-  Future<List<ModelProduct>> getProducts() async {
+  Future<List<ModelBanner>> getbanners() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/api/products/list'));
+      final response = await http.get(Uri.parse('$baseUrl/api/banners/list'));
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         final List<dynamic> data = jsonResponse['data'];
-        return data.map((e) => ModelProduct.fromJson(e)).toList();
+        return data.map((e) => ModelBanner.fromJson(e)).toList();
       } else {
         throw Exception('Không thể tải danh sách sản phẩm');
       }
     } catch (e) {
       // print('Lỗi khi lấy danh sách sản phẩm: ${e.toString()}');
-      return [];
-    }
-  }
-
-  // Tìm kiếm sản phẩm
-  Future<List<ModelProduct>> searchProducts(String keyword) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/products/search?key=$keyword'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        final List<dynamic> data = jsonResponse['data'];
-        return data.map((e) => ModelProduct.fromJson(e)).toList();
-      } else {
-        throw Exception('Không thể tìm kiếm sản phẩm');
-      }
-    } catch (e) {
       return [];
     }
   }

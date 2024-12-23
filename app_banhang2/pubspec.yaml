@@ -32,29 +32,9 @@ flutter:
   assets:
     - assets/translations/
     - assets/images/intro.png
-    - assets/images/apple.png
     - assets/images/google.png
-    - assets/images/home.png
-    - assets/images/order.png
-    - assets/images/profile.png
-    - assets/images/acces1.png
-    - assets/images/beauty.png
     - assets/images/men.png
-    - assets/images/men1.png
-    - assets/images/women1.png
-    - assets/images/banner.png
-    - assets/images/banner1.jpg
-    - assets/images/banner2.jpg
-    - assets/images/banner3.png
-    - assets/images/banner4.png
+    - assets/images/women.png 
+    - assets/images/acces.png
+    - assets/images/beauty.png
     - assets/images/avatar.png
-    - assets/images/shirt1.png
-    - assets/images/shirt2.png
-    - assets/images/shirt3.png
-    - assets/images/accessories.png
-    - assets/images/clothing.png
-    - assets/images/collection.png
-    - assets/images/shoes.png
-    - assets/images/Ticket.png
-    - assets/images/support.png
-    - assets/images/clothes.png
