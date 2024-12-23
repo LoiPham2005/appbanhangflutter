@@ -1,8 +1,10 @@
 import 'package:app_banhang2/components/my_button_back.dart';
 import 'package:app_banhang2/components/my_fillter.dart';
 import 'package:app_banhang2/components/my_search_and_fillter.dart';
+import 'package:app_banhang2/pages/product_detail.dart';
 import 'package:app_banhang2/services/models/model_product.dart';
 import 'package:app_banhang2/services/service_products.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class OutResults extends StatefulWidget {
@@ -23,6 +25,7 @@ class _OutResultsState extends State<OutResults> {
   final APIProduct _apiProduct = APIProduct();
   List<ModelProduct> _searchResults = [];
   bool _isLoading = false;
+  final numberFormat = NumberFormat("#,###", "de_DE");
 
   @override
   void initState() {
@@ -66,7 +69,8 @@ class _OutResultsState extends State<OutResults> {
                     screens: OutResults(),
                     isSearchScreen: true,
                     isButtonFillter: true,
-                    initialSearchText: widget.initialSearchText, // Fixed: widget instead of Widget
+                    initialSearchText: widget
+                        .initialSearchText, // Fixed: widget instead of Widget
                   ),
                 ),
               ),
@@ -90,53 +94,70 @@ class _OutResultsState extends State<OutResults> {
                     itemCount: _searchResults.length,
                     itemBuilder: (context, index) {
                       final product = _searchResults[index];
-                      return Card(
-                        elevation: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                width: double.infinity,
-                                decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(4),
-                                  ),
-                                ),
-                                child: Image.network(
-                                  product.image,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.error),
-                                ),
-                              ),
+                      // Split image string into array and get first image
+                      final images = product.image.split(',');
+                      final firstImage =
+                          images.isNotEmpty ? images[0].trim() : '';
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProductDetailPage(product: product),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.title,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '\$${product.price}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
+                          );
+                        },
+                        child: Card(
+                          elevation: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(4),
                                     ),
                                   ),
-                                ],
+                                  child: Image.network(
+                                    firstImage,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.error),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      product.title,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${numberFormat.format(product.price)} VND',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },

@@ -1,11 +1,19 @@
 var express = require('express');
 var router = express.Router();
 const modelProducts = require('../models/model_products');
+const Category = require('../models/model_category'); // Thêm dòng này
 
 module.exports = {
   // add data
   add: async (req, res) => {
       try {
+        console.log("Request Body:", req.body);
+        const id_category = req.body.id_category;
+        if (!id_category) {
+            return res.status(400).json({ error: 'id_category is required' });
+        }
+        req.body.id_category = id_category;
+         
           const model = new modelProducts(req.body);
           console.log("Data to be saved:", model);
           const result = await model.save();
@@ -128,30 +136,7 @@ module.exports = {
       }
   },
 
-  // search tìm kiếm
-//   search: async (req, res) => {
-//       try {
-//           const key = req.query.key;
-//           const result = await modelProducts.find({ name: { "$regex": key, "$options": 'i' } })
-//               .sort({ createdAt: -1 })
-//           if (result) {
-//               res.json({
-//                   "status": 200,
-//                   "message": "List",
-//                   "data": result
-//               });
-//           } else {
-//               res.json({
-//                   "status": 400,
-//                   "message": "Lỗi",
-//                   "data": []
-//               });
-//           }
-//       } catch (err) {
-//           console.error("Error while fetching users:", err); 
-//           res.status(500).send({ error: 'An error occurred while fetching data' }); 
-//       }
-//   }
+  // search theo title
 // search: async (req, res) => {
 //     try {
 //         const title = req.query.title;

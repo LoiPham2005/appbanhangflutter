@@ -22,7 +22,7 @@ class SearchAndFillter extends StatefulWidget {
 }
 
 class _SearchAndFillterState extends State<SearchAndFillter> {
-    late TextEditingController _searchController;
+  late TextEditingController _searchController;
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _SearchAndFillterState extends State<SearchAndFillter> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Builder(
           builder: (BuildContext context) {
             return Row(

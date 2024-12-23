@@ -42,12 +42,12 @@ class CategoriesData {
     {
       'image': 'assets/images/women.png',
       'label': 'women_category'.tr(),
-      'screen': const ProductDetailPage(),
+      'screen': const DiscoverScreen(),
     },
     {
       'image': 'assets/images/men.png',
       'label': 'men_category'.tr(),
-      'screen': const ProductDetailPage(),
+      'screen': const DiscoverScreen(),
     },
     {
       'image': 'assets/images/acces.png',

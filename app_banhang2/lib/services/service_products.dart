@@ -102,4 +102,23 @@ class APIProduct {
       return [];
     }
   }
+
+  // Hiển thị thông tin sản phẩm theo ID
+  Future<ModelProduct?> getProductById(String productId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/products/$productId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return ModelProduct.fromJson(jsonResponse['data']);
+      } else {
+        throw Exception('Không thể tìm thấy sản phẩm với ID: $productId');
+      }
+    } catch (e) {
+      return null;
+    }
+  }
 }

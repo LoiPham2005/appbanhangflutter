@@ -37,6 +37,7 @@ router.get('/category/search', category.search);
 
 // thêm sửa xoá hiển thị products
 router.post('/products/add', products.add);
+router.get('/products/getbyid/:id', products.getbyid);
 router.get('/products/list', products.list);
 router.put('/products/edit/:id', products.edit);
 router.delete('/products/delete/:id', products.delete);

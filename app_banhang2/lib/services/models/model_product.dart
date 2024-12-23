@@ -1,6 +1,6 @@
 class ModelProduct {
   final String id; // ID của sản phẩm
-  final String image; // Ảnh sản phẩm
+  final String image; // This will be a comma-separated string of image URLs
   final String title; // Tên sản phẩm
   final String brand; // Thương hiệu
   final double price; // Giá sản phẩm
@@ -35,7 +35,7 @@ class ModelProduct {
   factory ModelProduct.fromJson(Map<String, dynamic> json) {
     return ModelProduct(
       id: json['_id'] ?? '',
-      image: json['image'] ?? '',
+      image: (json['images'] as List<dynamic>?)?.join(',') ?? '', // Convert array to string
       title: json['title'] ?? '',
       brand: json['brand'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
@@ -70,6 +70,4 @@ class ModelProduct {
       'updatedAt': updatedAt.toIso8601String(),
     };
   }
-
-  
 }

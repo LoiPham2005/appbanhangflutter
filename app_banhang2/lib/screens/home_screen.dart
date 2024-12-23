@@ -1,5 +1,6 @@
 import 'package:app_banhang2/components/my_categoriesData.dart';
 import 'package:app_banhang2/components/my_drawer.dart';
+import 'package:app_banhang2/pages/product_detail.dart';
 import 'package:app_banhang2/services/models/model_image_banner.dart';
 import 'package:app_banhang2/services/models/model_product.dart';
 import 'package:app_banhang2/services/service_image_banner.dart';
@@ -203,31 +204,65 @@ class _HomeScreenState extends State<HomeScreen> {
                             itemCount: _products.length,
                             itemBuilder: (context, index) {
                               final item = _products[index];
-                              return Container(
-                                width: 130,
-                                // margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Image.network(
-                                      item.image,
-                                      height: 150,
-                                      width: 100,
-                                      fit: BoxFit.cover,
+                              // Split image string into array if it contains multiple URLs
+                              final images = item.image.split(
+                                  ','); // Assuming images are comma-separated
+                              final firstImage =
+                                  images.isNotEmpty ? images[0].trim() : '';
+
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProductDetailPage(product: item),
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      item.title,
-                                      style: const TextStyle(fontSize: 13),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      '${numberFormat.format(item.price)} VNĐ',
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.grey),
-                                    ),
-                                  ],
+                                  );
+                                },
+                                child: Container(
+                                  width: 130,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      firstImage.isNotEmpty
+                                          ? Image.network(
+                                              firstImage,
+                                              height: 150,
+                                              width: 100,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error,
+                                                      stackTrace) =>
+                                                  Container(
+                                                height: 150,
+                                                width: 100,
+                                                color: Colors.grey[300],
+                                                child: Icon(
+                                                    Icons.image_not_supported),
+                                              ),
+                                            )
+                                          : Container(
+                                              height: 150,
+                                              width: 100,
+                                              color: Colors.grey[300],
+                                              child: Icon(
+                                                  Icons.image_not_supported),
+                                            ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        item.title,
+                                        style: const TextStyle(fontSize: 13),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${numberFormat.format(item.price)} VNĐ',
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             },

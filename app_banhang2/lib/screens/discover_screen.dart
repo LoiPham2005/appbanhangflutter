@@ -46,13 +46,13 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
     switch (bannerKey) {
       case 'disColothing':
-        return _banner?.disColothing ?? '';
+        return _banner!.disColothing;
       case 'disAccess':
-        return _banner?.disAccess ?? '';
+        return _banner!.disAccess;
       case 'disShoes':
-        return _banner?.disShoes ?? '';
+        return _banner!.disShoes;
       case 'disCollection':
-        return _banner?.disCollection ?? '';
+        return _banner!.disCollection;
       default:
         return '';
     }
@@ -61,13 +61,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Widget _buildCategoryImage(Map<String, dynamic> category) {
     final bannerImage = getBannerImage(category['bannerKey']);
 
-    final assetMap = {
-      'disColothing': 'clothing.png',
-      'disAccess': 'accessories.png',
-      'disShoes': 'shoes.png',
-      'disCollection': 'collection.png'
-    };
-
     return bannerImage.isNotEmpty
         ? Image.network(
             bannerImage,
@@ -75,14 +68,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             height: 130,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) => Image.asset(
-              'assets/images/${assetMap[category['bannerKey']]}',
+              'assets/images/intro.png',
               width: 100,
               height: 100,
               fit: BoxFit.cover,
             ),
           )
         : Image.asset(
-            'assets/images/${assetMap[category['bannerKey']]}',
+            'assets/images/intro.png',
             width: 100,
             height: 100,
             fit: BoxFit.cover,
