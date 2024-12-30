@@ -25,21 +25,21 @@ class CartScreen extends StatelessWidget {
               child: ListView(
                 children: const [
                   CartItem(
-                    image: 'assets/images/shirt1.png',
+                    image: 'assets/images/intro.png',
                     title: 'Sportwear Set',
                     price: 80.00,
                     size: 'L',
                     color: 'Cream',
                   ),
                   CartItem(
-                    image: 'assets/images/shirt2.png',
+                    image: 'assets/images/intro.png',
                     title: 'Turtleneck Sweater',
                     price: 39.99,
                     size: 'M',
                     color: 'White',
                   ),
                   CartItem(
-                    image: 'assets/images/shirt3.png',
+                    image: 'assets/images/intro.png',
                     title: 'Cotton T-shirt',
                     price: 30.00,
                     size: 'L',
