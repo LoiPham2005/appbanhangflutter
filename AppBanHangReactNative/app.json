@@ -1,0 +1,82 @@
+{
+  "expo": {
+    "name": "AppBanHangReactNative",
+    "slug": "AppBanHangReactNative",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/welcome.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/welcome.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/welcome.png",
+        "backgroundColor": "#ffffff"
+      },
+      "useNextNotificationsApi": true,
+      "permissions": [
+        "NOTIFICATIONS"
+      ],
+      "package": "com.yourcompany.appbanhangreactnative",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "gemstore",
+              "host": "payment",
+              "pathPrefix": "/result"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#ffffff",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Thông báo mới",
+      "iosDisplayInForeground": true,
+      "androidNotificationChannels": [
+        {
+          "name": "orders",
+          "importance": "max",
+          "vibrationPattern": [
+            0,
+            250,
+            250,
+            250
+          ],
+          "lightColor": "#FF231F7C",
+          "sound": true,
+          "enableVibrate": true,
+          "showBadge": true,
+          "description": "Thông báo đơn hàng"
+        }
+      ]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ]
+        }
+      ]
+    ],
+    "scheme": "gemstore"
+  }
+}

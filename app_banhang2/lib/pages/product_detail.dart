@@ -1,7 +1,13 @@
+import 'package:app_banhang2/components/loading.dart';
 import 'package:app_banhang2/services/models/model_product.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:app_banhang2/services/models/model_cart.dart';
+import 'package:app_banhang2/services/service_cart.dart';
+import 'package:app_banhang2/screens/cart_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_banhang2/login_register/login.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final ModelProduct product;
@@ -15,6 +21,8 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
   final numberFormat = NumberFormat("#,###", "de_DE");
   int _currentImageIndex = 0;
+  final CartService _cartService = CartService();
+  bool _isLoading = false;
 
   List<String> _getProductImages() {
     return widget.product.image
@@ -77,216 +85,240 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Replace the single image with carousel
-            _buildImageCarousel(),
+  Future<void> _addToCart() async {
+    setState(() => _isLoading = true);
 
-            // Product Info
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.product.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      ...List.generate(
-                          5,
-                          (index) => const Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 20,
-                              )),
-                      const Text(' (32)', style: TextStyle(color: Colors.grey)),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '${numberFormat.format(widget.product.price)} VND',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('userId');
 
-                  // Color Selection
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Color:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      _buildColorOption(Colors.brown[200]!),
-                      const SizedBox(width: 8),
-                      _buildColorOption(Colors.red),
-                    ],
-                  ),
+      if (userId == null) {
+        // Show login required dialog
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('login_required'.tr()),
+              content: Text('please_login_to_continue'.tr()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('cancel'.tr()),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                    );
+                  },
+                  child: Text('login'.tr()),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
 
-                  // Size Selection
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Size:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Size Guide'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      _buildSizeOption('S'),
-                      const SizedBox(width: 8),
-                      _buildSizeOption('M'),
-                      const SizedBox(width: 8),
-                      _buildSizeOption('L'),
-                    ],
-                  ),
+      final cart = ModelCart(
+        id_user: userId,
+        id_product: widget.product.id,
+        purchaseQuantity: 1,
+      );
 
-                  // Description
-                  const SizedBox(height: 16),
-                  ExpansionTile(
-                    title: Text(
-                      'Description',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          '${widget.product.description}',
+      final result = await _cartService.addToCart(cart);
+
+      if (mounted) {
+        if (result != null && result['status'] == 200) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('success'.tr()),
+                content: Text('add_to_cart_success'.tr()),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CartScreen(),
                         ),
-                      ),
-                    ],
+                      );
+                    },
+                    child: Text('view_cart'.tr()),
                   ),
-
-                  // Reviews
-                  const ExpansionTile(
-                    title: Text(
-                      'Reviews',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    children: [
-                      ReviewWidget(),
-                    ],
-                  ),
-
-                  // Similar Products
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Similar Products',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 3,
-                      itemBuilder: (context, index) {
-                        return const SimilarProductCard();
-                      },
-                    ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('continue_shopping'.tr()),
                   ),
                 ],
+              );
+            },
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('add_to_cart_failed'.tr())),
+          );
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LoadingOverlay(
+      isLoading: _isLoading,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.favorite_border, color: Colors.black),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Replace the single image with carousel
+              _buildImageCarousel(),
+
+              // Product Info
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.product.title,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        ...List.generate(
+                            5,
+                            (index) => const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 20,
+                                )),
+                        const Text(' (32)',
+                            style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '${numberFormat.format(widget.product.price)} VND',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // Description
+                    const SizedBox(height: 16),
+                    ExpansionTile(
+                      title: Text(
+                        'Description',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            '${widget.product.description}',
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Reviews
+                    const ExpansionTile(
+                      title: Text(
+                        'Reviews',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      children: [
+                        ReviewWidget(),
+                      ],
+                    ),
+
+                    // Similar Products
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Similar Products',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 3,
+                        itemBuilder: (context, index) {
+                          return const SimilarProductCard();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 1,
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _addToCart,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 5,
-            ),
-          ],
-        ),
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+            child: Text(
+              'add_to_cart'.tr(),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.inversePrimary),
             ),
           ),
-          child: Text(
-            'Add To Cart',
-            style:
-                TextStyle(color: Theme.of(context).colorScheme.inversePrimary),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildColorOption(Color color) {
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey),
-      ),
-    );
-  }
-
-  Widget _buildSizeOption(String size) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: Text(
-          size,
-          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
     );

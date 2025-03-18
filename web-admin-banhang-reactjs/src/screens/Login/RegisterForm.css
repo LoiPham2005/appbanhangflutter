@@ -1,0 +1,149 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #4285f4;
+    /* Changed from #4682f9 to match login form */
+    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+}
+
+.register-card {
+    width: 100%;
+    max-width: 480px;
+    /* Changed from 400px to match login form */
+    background-color: white;
+    border-radius: 12px;
+    padding: 40px;
+    /* Changed from 2rem to match login form */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    /* Updated shadow to match login form */
+}
+
+h1 {
+    font-size: 1.5rem;
+    text-align: center;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    background-color: #f7f9fc;
+    font-size: 0.9rem;
+}
+
+.password-group {
+    position: relative;
+}
+
+.forgot-link {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 0.8rem;
+    color: #999;
+    text-decoration: none;
+}
+
+.terms-checkbox {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+
+.terms-checkbox input {
+    margin-right: 0.5rem;
+}
+
+.terms-checkbox label {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.signup-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #4682f9;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signup-btn:hover {
+    background-color: #3b6fd8;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.login-link a {
+    color: #4682f9;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #666;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #e00;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}

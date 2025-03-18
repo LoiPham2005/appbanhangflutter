@@ -10,7 +10,8 @@ class ModelProduct {
   final String material; // Chất liệu
   final int stockQuantity; // Số lượng tồn kho
   final String idCategory; // ID danh mục sản phẩm
-  final String status; // Trạng thái sản phẩm: active, out of stock, discontinued
+  final String
+      status; // Trạng thái sản phẩm: active, out of stock, discontinued
   final DateTime createdAt; // Ngày tạo
   final DateTime updatedAt; // Ngày cập nhật
 
@@ -35,9 +36,13 @@ class ModelProduct {
   factory ModelProduct.fromJson(Map<String, dynamic> json) {
     return ModelProduct(
       id: json['_id'] ?? '',
-      image: (json['images'] as List<dynamic>?)?.join(',') ?? '', // Convert array to string
+      // Handle media array from API
+      image: (json['media'] as List<dynamic>?)
+              ?.map((media) => media['url'].toString())
+              .join(',') ??
+          '',
       title: json['title'] ?? '',
-      brand: json['brand'] ?? '',
+      brand: json['publishing_house'] ?? '', // Map publishing_house to brand
       price: (json['price'] ?? 0).toDouble(),
       description: json['description'] ?? '',
       size: json['size'] ?? '',
@@ -46,8 +51,10 @@ class ModelProduct {
       stockQuantity: json['stock_quantity'] ?? 0,
       idCategory: json['id_category'] ?? '',
       status: json['status'] ?? 'active',
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
+      createdAt:
+          DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      updatedAt:
+          DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
     );
   }
 

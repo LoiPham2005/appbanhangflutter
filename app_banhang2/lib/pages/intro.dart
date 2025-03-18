@@ -26,6 +26,7 @@ class Intro extends StatelessWidget {
               ),
             ),
             Container(
+              alignment: Alignment.topCenter,
               margin: const EdgeInsets.only(top: 50),
               child: Text(
                 'intro'.tr(),
@@ -42,7 +43,8 @@ class Intro extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 50),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(SlideAnimation.createRoute(const LoginScreen()));
+                    Navigator.of(context)
+                        .push(SlideAnimation.createRoute(const LoginScreen()));
                   },
                   child: const Text('Nhấn vào đây'),
                 ),

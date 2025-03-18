@@ -1,6 +1,6 @@
-import 'package:app_banhang2/components/my_categoriesData.dart';
 import 'package:app_banhang2/components/my_drawer.dart';
 import 'package:app_banhang2/pages/product_detail.dart';
+import 'package:app_banhang2/pages/search_screen.dart';
 import 'package:app_banhang2/services/models/model_image_banner.dart';
 import 'package:app_banhang2/services/models/model_product.dart';
 import 'package:app_banhang2/services/service_image_banner.dart';
@@ -8,6 +8,7 @@ import 'package:app_banhang2/services/service_products.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:app_banhang2/data/categories_data.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   List<ModelProduct> _products = [];
   List<Widget> _bannerItems = [];
-  List<ModelBanner> _bannerDefault = [];
+  bool _isLoading = true;
+  String _error = '';
 
   // final numberFormat = NumberFormat("#,###", "en_US"); // Format số có dấu phẩy hoặc dấu chấm tùy locale
   final numberFormat =
@@ -88,15 +90,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadingData() async {
-    final products = await _apiProduct.getProducts();
-    final banners = await CategoriesData.getBannerWidgets();
-    final banner2 = await _apiBanner.getbanners();
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = '';
+      });
 
-    setState(() {
-      _products = products;
-      _bannerItems = banners;
-      _bannerDefault = banner2;
-    });
+      // Load products
+      final products = await _apiProduct.getProducts();
+
+      // Load banners
+      final banners = await _apiBanner.getbanners();
+      final bannerWidgets = [];
+
+      if (banners.isNotEmpty && banners[0].homeBanner.isNotEmpty) {
+        for (String imageUrl in banners[0].homeBanner) {
+          bannerWidgets.add(
+            Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  Image.asset('assets/images/banner.png'),
+            ),
+          );
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _products = products;
+          // _bannerItems = bannerWidgets;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = 'Error loading data: $e';
+          _isLoading = false;
+        });
+      }
+    }
   }
 
 // select banner default
@@ -111,11 +145,76 @@ class _HomeScreenState extends State<HomeScreen> {
         : Image.asset('assets/images/banner.png');
   }
 
+  Widget _buildCategoryItem(Map<String, dynamic> category) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: category['color'],
+              borderRadius: BorderRadius.circular(35),
+            ),
+            child: Icon(
+              category['icon'],
+              size: 35,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            category['labelKey'].toString().tr(),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('store_name'.tr())),
+        titleSpacing: 8,
+        title: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SearchScreen()),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.search,
+                  color: Colors.grey,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'search_products'.tr(),
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () => {},
@@ -124,188 +223,137 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: const MyDrawer(),
-      body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (overscroll) {
-          return true;
-        },
-        child: RefreshIndicator(
-          // Add RefreshIndicator here
-          onRefresh: () async {
-            await loadingData(); // Reuse existing load method
-          },
-          child: SingleChildScrollView(
-            physics:
-                const AlwaysScrollableScrollPhysics(), // Enable scroll when content is small
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: categories.map((category) {
-                    return Column(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : RefreshIndicator(
+                  onRefresh: loadingData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
                       children: [
-                        IconButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => category['screen'],
-                            ),
-                          ),
-                          icon: Image.asset(
-                            category['image'],
-                            height: 40,
-                            width: 40,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(
-                                    Icons.error), //Handle image loading errors
+                        // Categories section
+                        SizedBox(
+                          height: 110,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            itemCount: CategoriesData.categories.length,
+                            itemBuilder: (context, index) => _buildCategoryItem(
+                                CategoriesData.categories[index]),
                           ),
                         ),
-                        Text(category['label']),
-                      ],
-                    );
-                  }).toList(),
-                ),
-                // slide và dấu chấm
-                Column(
-                  children: [
-                    _buildCarousel(),
-                    _buildIndicators(),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'featured_products_title'.tr(),
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        'show_all'.tr(),
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Theme.of(context).colorScheme.secondary),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: SizedBox(
-                    height: 200,
-                    child: _products.isEmpty
-                        ? const Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _products.length,
-                            itemBuilder: (context, index) {
-                              final item = _products[index];
-                              // Split image string into array if it contains multiple URLs
-                              final images = item.image.split(
-                                  ','); // Assuming images are comma-separated
-                              final firstImage =
-                                  images.isNotEmpty ? images[0].trim() : '';
 
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ProductDetailPage(product: item),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  width: 130,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      firstImage.isNotEmpty
-                                          ? Image.network(
-                                              firstImage,
-                                              height: 150,
-                                              width: 100,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  Container(
-                                                height: 150,
-                                                width: 100,
-                                                color: Colors.grey[300],
-                                                child: Icon(
-                                                    Icons.image_not_supported),
-                                              ),
-                                            )
-                                          : Container(
-                                              height: 150,
-                                              width: 100,
-                                              color: Colors.grey[300],
-                                              child: Icon(
-                                                  Icons.image_not_supported),
-                                            ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        item.title,
-                                        style: const TextStyle(fontSize: 13),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        '${numberFormat.format(item.price)} VNĐ',
-                                        style: const TextStyle(
-                                            fontSize: 12, color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                        // Banner carousel section
+                        if (_bannerItems.isNotEmpty) ...[
+                          _buildCarousel(),
+                          _buildIndicators(),
+                        ],
+
+                        // Featured products section
+                        if (_products.isNotEmpty) ...[
+                          _buildFeaturedProductsHeader(),
+                          _buildProductsList(),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                _bannerDefault.isNotEmpty
-                    ? selectImage(_bannerDefault[0].homeBanner4)
-                    : const Center(child: CircularProgressIndicator()),
-                _bannerDefault.isNotEmpty
-                    ? selectImage(_bannerDefault[0].homeBanner5)
-                    : const Center(child: CircularProgressIndicator()),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width *
-                            0.43, // 43% screen width
-                        height: 200,
-                        child: _bannerDefault.isNotEmpty
-                            ? selectImage(_bannerDefault[0].homeBanner6)
-                            : const Center(child: CircularProgressIndicator()),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width *
-                            0.43, // 43% screen width
-                        height: 200,
-                        child: _bannerDefault.isNotEmpty
-                            ? selectImage(_bannerDefault[0].homeBanner7)
-                            : const Center(child: CircularProgressIndicator()),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+    );
+  }
+
+  Widget _buildFeaturedProductsHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'featured_products_title'.tr(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
+          TextButton(
+            onPressed: () {
+              // Navigate to all products
+            },
+            child: Text('show_all'.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductsList() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15),
+      child: SizedBox(
+        height: 200,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _products.length,
+          itemBuilder: (context, index) => _buildProductItem(_products[index]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductItem(ModelProduct product) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(product: product),
+          ),
+        );
+      },
+      child: Container(
+        width: 160,
+        margin: const EdgeInsets.only(right: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product Image
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                image: DecorationImage(
+                  image: NetworkImage(product.image.split(',').first),
+                  fit: BoxFit.cover,
+                  onError: (exception, stackTrace) =>
+                      const AssetImage('assets/images/product_placeholder.png'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Product Title
+            Text(
+              product.title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+
+            // Product Price
+            Text(
+              '${numberFormat.format(product.price)} đ',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ],
         ),
       ),
     );

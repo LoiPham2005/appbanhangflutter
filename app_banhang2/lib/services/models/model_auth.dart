@@ -3,28 +3,40 @@ class User {
   String email;
   String password;
   String role;
-  String? token; // token có thể là null
+  String? accessToken;
+  String? refreshToken;
+  String? avatar;
+  String? phone;
+  DateTime? birthDate;
 
   User({
     required this.username,
     required this.email,
     required this.password,
-    this.role = 'user', // mặc định là 'user'
-    this.token,
+    this.role = 'user',
+    this.accessToken,
+    this.refreshToken,
+    this.avatar,
+    this.phone,
+    this.birthDate,
   });
 
-  // Phương thức để chuyển đổi từ JSON sang đối tượng User
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       username: json['username'] ?? '',
       email: json['email'] ?? '',
       password: json['password'] ?? '',
       role: json['role'] ?? 'user',
-      token: json['token'],
+      accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
+      avatar: json['avatar'],
+      phone: json['phone'],
+      birthDate: json['birth_date'] != null
+          ? DateTime.parse(json['birth_date'])
+          : null,
     );
   }
 
-  // Phương thức để chuyển đổi từ đối tượng User sang JSON
   Map<String, dynamic> toJson() {
     final data = {
       'username': username,
@@ -32,16 +44,16 @@ class User {
       'password': password,
       'role': role,
     };
-    if (token != null) {
-      data['token'] = token!; // Chỉ thêm token nếu có giá trị
-    }
+    if (accessToken != null) data['accessToken'] = accessToken!;
+    if (refreshToken != null) data['refreshToken'] = refreshToken!;
+    if (avatar != null) data['avatar'] = avatar!;
+    if (phone != null) data['phone'] = phone!;
+    if (birthDate != null) data['birth_date'] = birthDate!.toIso8601String();
     return data;
   }
 
-  // Phương thức để kiểm tra xem người dùng có phải là admin không
   bool isAdmin() => role.toLowerCase() == 'admin';
 
-  // Xóa password sau khi sử dụng
   void clearPassword() {
     password = '';
   }

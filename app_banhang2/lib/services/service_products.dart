@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:app_banhang2/services/base/base_url.dart';
 import 'package:app_banhang2/services/models/model_product.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class APIProduct {
@@ -72,13 +73,14 @@ class APIProduct {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        final List<dynamic> data = jsonResponse['data'];
-        return data.map((e) => ModelProduct.fromJson(e)).toList();
-      } else {
-        throw Exception('Không thể tải danh sách sản phẩm');
+        if (jsonResponse['status'] == 200 && jsonResponse['data'] != null) {
+          final List<dynamic> data = jsonResponse['data'];
+          return data.map((e) => ModelProduct.fromJson(e)).toList();
+        }
       }
+      return [];
     } catch (e) {
-      // print('Lỗi khi lấy danh sách sản phẩm: ${e.toString()}');
+      debugPrint('Error fetching products: $e');
       return [];
     }
   }

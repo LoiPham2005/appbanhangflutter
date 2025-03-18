@@ -1,3 +1,4 @@
+import 'package:app_banhang2/pages/intro.dart';
 import 'package:app_banhang2/screens/home_screen.dart';
 import 'package:app_banhang2/themes/light_mode.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -39,7 +40,7 @@ class _MainAppState extends State<MainApp> {
       supportedLocales: context.supportedLocales, // Danh sách ngôn ngữ hỗ trợ
       localizationsDelegates:
           context.localizationDelegates, // Cấu hình đa ngôn ngữ
-      home: const HomeScreen(),
+      home: const Intro(),
     );
   }
 }
