@@ -164,5 +164,73 @@
     "write_your_review": "Write your review here",
     "submit_review": "Submit Review",
     "review_success": "Review submitted successfully",
-    "review_failed": "Failed to submit review"
+    "review_failed": "Failed to submit review",
+    "profile": {
+        "paymentMethod": "Payment Method",
+        "wishlist": "Wishlist",
+        "appReviews": "App Reviews",
+        "editProfile": {
+            "title": "Edit Profile",
+            "confirmMessage": "Save changes?",
+            "saving": "Saving..."
+        },
+        "username": "Username",
+        "sex": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "phone": "Phone Number",
+        "birthDate": "Birth Date",
+        "save": "Save Changes",
+        "updateSuccess": "Cập nhật thông tin thành công",
+        "updateError": "Không thể cập nhật thông tin",
+        "errorUploadingImage": "Không thể tải lên ảnh"
+    },
+    "common": {
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "save": "Save"
+    },
+    "settings": {
+        "title": "Settings",
+        "changePassword": "Change Password",
+        "darkMode": {
+            "title": "Dark Mode"
+        },
+        "language": "Language"
+    },
+    "support": {
+        "title": "Support",
+        "contact": {
+            "title": "Contact Us",
+            "email": "Email: support@gemstore.com",
+            "phone": "Phone: +1 234 567 890",
+            "hours": "Hours: Mon-Fri 9AM-6PM"
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "shipping": "Shipping Information",
+            "returns": "Returns & Refunds",
+            "payment": "Payment Methods"
+        },
+        "help": {
+            "title": "Need Help?",
+            "description": "Contact our customer support team for assistance."
+        }
+    },
+    "aboutUs": {
+        "title": "About Us",
+        "description": "Welcome to GemStore, your premier destination for fashion.",
+        "content": {
+            "mission": "Our mission is to provide quality fashion at affordable prices.",
+            "vision": "We envision becoming the leading fashion retailer in the region.",
+            "story": "Founded in 2020, we've grown to serve thousands of customers."
+        },
+        "features": {
+            "variety": "Wide variety of products",
+            "service": "Excellent customer service",
+            "delivery": "Fast and reliable delivery",
+            "payment": "Secure payment options"
+        }
+    }
 }

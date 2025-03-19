@@ -1,8 +1,12 @@
 import 'package:app_banhang2/login_register/login.dart';
+import 'package:app_banhang2/screens/about_us_screen.dart';
 // import 'package:app_banhang2/screens/discover_screen.dart'; // Remove this import
 import 'package:app_banhang2/screens/home_screen.dart';
 import 'package:app_banhang2/screens/cart_screen.dart'; // Make sure this import exists
 import 'package:app_banhang2/screens/order_screen.dart';
+import 'package:app_banhang2/screens/profile_screen.dart';
+import 'package:app_banhang2/screens/setting_screen.dart';
+import 'package:app_banhang2/screens/support_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,6 +113,12 @@ class _DrawerState extends State<MyDrawer> {
             ListTile(
               leading: const Icon(Icons.person),
               title: Text('my_profile'.tr()),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const ProfileScreen(), // Changed from DiscoverScreen to OrderScreen
+                  )),
             ),
             Container(
                 margin: const EdgeInsets.only(left: 10),
@@ -116,14 +126,32 @@ class _DrawerState extends State<MyDrawer> {
             ListTile(
               leading: const Icon(Icons.settings),
               title: Text('setting'.tr()),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const SettingScreen(), // Changed from DiscoverScreen to OrderScreen
+                  )),
             ),
             ListTile(
               leading: const Icon(Icons.support),
               title: Text('support'.tr()),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const SupportScreen(), // Changed from DiscoverScreen to OrderScreen
+                  )),
             ),
             ListTile(
               leading: const Icon(Icons.info),
               title: Text('about_us'.tr()),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const AboutUsScreen(), // Changed from DiscoverScreen to OrderScreen
+                  )),
             ),
             const Divider(),
             ListTile(
