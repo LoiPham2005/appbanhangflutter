@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:app_banhang2/pages/chang_password_setting.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -10,7 +11,12 @@ class SettingScreen extends StatelessWidget {
       {
         'icon': Icons.lock,
         'title': 'settings.changePassword'.tr(),
-        'onPressed': () => Navigator.pushNamed(context, 'ChangePass'),
+        'onPressed': () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ChangePasswordScreen(),
+              ),
+            ),
       },
       {
         'icon': Icons.dark_mode,

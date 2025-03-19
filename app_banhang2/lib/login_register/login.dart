@@ -26,14 +26,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> handleLogin() async {
     setState(() => _isLoading = true);
-
     try {
       final email = _tecEmail.text.trim();
       final password = _tecPassword.text.trim();
 
       if (email.isEmpty || password.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('please_fill_all_fields'.tr())));
+          SnackBar(content: Text('please_fill_all_fields'.tr())),
+        );
         return;
       }
 
@@ -41,29 +41,35 @@ class _LoginScreenState extends State<LoginScreen> {
           await _apiService.loginWithEmailAndPassword(email, password);
 
       if (result != null && result['status'] == 200) {
-        // Save complete user data to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        final userData = result['user'];
+        final userData = result['user'] as Map<String, dynamic>;
 
-        await prefs.setString('userId', userData['_id']);
-        await prefs.setString('userName', userData['username']);
-        await prefs.setString('userEmail', userData['email']);
-        await prefs.setString('userAvatar', userData['avatar'] ?? '');
-        await prefs.setString('accessToken', result['accessToken']);
-        await prefs.setString('refreshToken', result['refreshToken']);
+        // Convert all values to String before saving
+        await prefs.setString('userId', userData['_id']?.toString() ?? '');
+        await prefs.setString(
+            'userName', userData['username']?.toString() ?? '');
+        await prefs.setString('userEmail', userData['email']?.toString() ?? '');
+        await prefs.setString(
+            'userAvatar', userData['avatar']?.toString() ?? '');
+        await prefs.setString(
+            'accessToken', result['accessToken']?.toString() ?? '');
+        await prefs.setString(
+            'refreshToken', result['refreshToken']?.toString() ?? '');
 
         if (mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('login_success'.tr())));
-
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('login_success'.tr())),
+          );
           Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false);
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
+          );
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(result?['message'] ?? 'login_failed'.tr())));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result?['message'] ?? 'login_failed'.tr())),
+          );
         }
       }
     } finally {

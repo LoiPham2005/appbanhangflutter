@@ -87,5 +87,25 @@
     "cart_remove_title": "Xóa sản phẩm",
     "cart_remove_message": "Bạn có chắc muốn xóa sản phẩm này?",
     "cancel": "Hủy",
-    "confirm": "Xác nhận"
+    "confirm": "Xác nhận",
+    "settings": {
+        "changePassword": "Đổi mật khẩu"
+    },
+    "validation": {
+        "required": "Vui lòng nhập đầy đủ thông tin",
+        "passwordLength": "Mật khẩu phải có ít nhất 6 ký tự",
+        "passwordMismatch": "Mật khẩu không khớp"
+    },
+    "auth": {
+        "forgotPassword": {
+            "changePassword": {
+                "newPassword": "Mật khẩu mới",
+                "confirmPassword": "Xác nhận mật khẩu mới",
+                "submit": "Đổi mật khẩu",
+                "success": "Đổi mật khẩu thành công",
+                "error": "Không thể đổi mật khẩu",
+                "processing": "Đang xử lý..."
+            }
+        }
+    }
 }

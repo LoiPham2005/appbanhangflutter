@@ -191,4 +191,29 @@ class ApiService {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>?> changePassword(
+      String userId, Map<String, dynamic> data) async {
+    try {
+      print('Changing password for user $userId with data: $data'); // Debug log
+
+      final response = await http.put(
+        // Change from patch to put
+        Uri.parse('$baseUrl/api/users/change-password/$userId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+
+      print('Change password response: ${response.statusCode}'); // Debug log
+      print('Change password body: ${response.body}'); // Debug log
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return null;
+    } catch (e) {
+      print('Error changing password: $e');
+      return null;
+    }
+  }
 }
